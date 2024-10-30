@@ -1,0 +1,105 @@
+﻿@model List<Letovi.Web.Models.ViewModels.ReservationViewModel>
+@{
+    var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+}
+<body style="background-image: url('@Url.Content("~/images/clouds.jpg")'); background-size: cover; background-repeat: no-repeat; background-attachment: fixed;">
+    <div class="container py-4">
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (ViewData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        <div class="bg-secondary bg-opacity-10 py-2 mb-4">
+            <h1 class="text-center">Prikaz Rezervacija</h1>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <table class="table table-striped" id="reservation-table">
+                <thead>
+                    <tr>
+                        <th>Mesto Polaska</th>
+                        <th>Mesto Dolaska</th>
+                        <th>Broj presedanja</th>
+                        <th>Datum polaska</th>
+                        <th>Broj zeljenih mesta</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var reservacija in Model)
+                    {
+                        <tr data-id="@reservacija.Id">
+                            <td>@reservacija.Flight.DepartureCity</td>
+                            <td>@reservacija.Flight.ArrivalCity</td>
+                            <td>@reservacija.Flight.NumberOfStops</td>
+                            <td>@reservacija.Flight.FlightDate.ToShortDateString()</td>
+                            <td>@reservacija.NumberOfSeats</td>
+                            <td class="status" style="color: @(reservacija.isApproverd ? "green" : "red")">
+                                @(reservacija.isApproverd ? "Odobrena" : "Nije odobrena")
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="text-center">
+                <p>Trenutno nemate ni jednu rezervaciju!</p>
+            </div>
+        }
+    </div>
+</body>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/reservationHub")
+                .configureLogging(signalR.LogLevel.Information)
+                .build();
+
+            connection.on("ReceiveReservationUpdate", function (json) {
+                var reservation = JSON.parse(json);
+
+                //Pronalazi red sa odgovarajucim IDem rezervacije
+                const row = document.querySelector(`tr[data-id="${reservation.Id}"]`);
+                if (row) {
+                    // Azuriranje statusa rezervacije
+                    const statusCell = row.querySelector(".status");
+                    statusCell.textContent = reservation.isApproverd ? "Odobrena" : "Nije odobrena";
+                    statusCell.style.color = reservation.isApproverd ? "green" : "red";
+                }
+            });
+
+            connection.onclose(function (error) {
+                console.error("Connection closed with error:", error);
+                setTimeout(function () {
+                    connection.start().catch(err => console.error(err.toString()));
+                }, 5000);
+            });
+
+            connection.start().catch(function (err) {
+                console.error(err.toString());
+            });
+        });
+    </script>
+}

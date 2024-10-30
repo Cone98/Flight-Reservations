@@ -1,0 +1,106 @@
+﻿@model Letovi.Web.Models.ViewModels.AddFlightRequest
+@{
+    var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+}
+<body style="background-image: url('@Url.Content("~/images/Ariplane.jpg")'); background-size: cover; background-repeat: no-repeat; background-attachment: fixed;">
+    <div class="container py-4">
+        @if (ViewData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @ViewData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (ViewData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @ViewData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        <div class="bg-secondary bg-opacity-10 py-2 mb-4">
+            <h1 class="text-center">Dodavanje novog leta</h1>
+        </div>
+
+        <div class="container py-5" style="background-color: rgba(159, 210, 232,0.4);">
+            <form method="post" onsubmit="return check()">
+                <div class="mb-3">
+                    <label for="mestoPolaska" class="form-label">Mesto Polaska:</label>
+                    <select id="mestoPolaska" asp-for="MestoPolaska" class="form-select">
+                        <option value="null">Izaberite mesto Polaska</option>
+                        <option value="Beograd">Beograd</option>
+                        <option value="Nis">Nis</option>
+                        <option value="Pristina">Pristina</option>
+                        <option value="Kraljevo">Kraljevo</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="mestoDolaska" class="form-label">Mesto Dolaska:</label>
+                    <select id="mestoDolaska" asp-for="MestoDolaska" class="form-select">
+                        <option value="null">Izaberite mesto dolaska</option>
+                        <option value="Beograd">Beograd</option>
+                        <option value="Nis">Nis</option>
+                        <option value="Pristina">Pristina</option>
+                        <option value="Kraljevo">Kraljevo</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="brojPresedanja" class="form-label">Broj presedanja:</label>
+                    <input type="number" placeholder="0" value="0" class="form-control" id="brojPresedanja" asp-for="BrojPresedanja" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="datum" class="form-label">Datum leta:</label>
+                    <input type="date" class="form-control" id="datum" name="datum" asp-for="Datum" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="brojMesta" class="form-label">Broj Mesta:</label>
+                    <input type="number" class="form-control" id="brojMesta" asp-for="BrojMesta" />
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-dark" style="background-color: rgba(26, 75, 148,0.9);">Submit</button>
+                </div>
+
+                <script>
+                    function check() {
+                        const mesto = document.getElementById("mestoPolaska").value;
+                        const mesto2 = document.getElementById("mestoDolaska").value;
+                        const datum = document.getElementById("datum");
+                        const date = new Date(datum.value);
+                        const brmesta = document.getElementById("brojMesta").value;
+                        const danas = new Date();
+
+                        if (mesto === "null") {
+                            alert("Morate izabrati mesto polaska");
+                            return false;
+                        }
+
+                        if (mesto2 === "null") {
+                            alert("Morate izabrati mesto dolaska");
+                            return false;
+                        }
+
+                        if (date < danas) {
+                            alert("Nevalidan datum");
+                            return false;
+                        }
+                        if (mesto2 === mesto) {
+                            alert("Mesta polaska i dolaska moraju biti različita");
+                            return false;
+                        }
+                        if (brmesta === "0") {
+                            alert("Broj mesta na letu ne može biti 0");
+                            return false;
+                        }
+
+                        return true; 
+                    }
+                </script>
+            </form>
+        </div>
+    </div>
+</body>

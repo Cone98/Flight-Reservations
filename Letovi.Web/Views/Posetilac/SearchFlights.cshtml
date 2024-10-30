@@ -1,0 +1,115 @@
+﻿@model List<Letovi.Web.Models.Domain.Flight>
+
+@{
+    var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+}
+<body style="background-image: url('@Url.Content("~/images/clouds.jpg")'); background-size: cover; background-repeat: no-repeat; background-attachment: fixed;">
+    <div class="container py-4">
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (ViewData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @ViewData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        <div class="bg-secondary bg-opacity-10 py-2 mb-4">
+            <h1 class="text-center">Prikaz letova</h1>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <form class="d-flex align-items-center">
+                    <input name="searchString" class="form-control me-1" type="search" placeholder="Mesto Polaska" aria-label="Search">
+                    <input name="searchString2" class="form-control me-1" type="search" placeholder="Mesto Dolaska" aria-label="Search">
+                    <div class="form-check d-flex align-items-center">
+                        <input id="noStops" name="noStops" value="true" type="checkbox" class="form-check-input me-2">
+                        <label class="form-check-label mb-0" for="noStops">Bez presedanja</label>
+                    </div>
+                    <button class="btn btn-dark ms-2" type="submit" style="background-color: rgba(26, 75, 148,0.9);">Pretraga</button>
+                </form>
+            </div>
+
+            <div class="col-md-6 text-end">
+                <a asp-action="SearchFlights" class="btn btn-secondary text-dark" style="background-color: rgba(26, 75, 148,0.4); margin-top:15px">Svi letovi</a>
+            </div>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Mesto Polaska</th>
+                        <th>Mesto Dolaska</th>
+                        <th>Broj presedanja</th>
+                        <th>Datum polaska</th>
+                        <th>Slobodno mesta</th>
+                        <th>Broj željenih mesta na letu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var let in Model)
+                    {
+                        <tr >
+                            @if (let.AvailableSeats > 0)
+                            {
+                                <td>@let.DepartureCity</td>
+                                <td>@let.ArrivalCity</td>
+                                <td>@let.NumberOfStops</td>
+                                <td>@let.FlightDate.ToShortDateString()</td>
+                                <td>@let.AvailableSeats</td>
+                                <td>
+                                    @if (let.FlightDate.Subtract(DateTime.Now).Days >= 3 && let.AvailableSeats > 0)
+                                    {
+                                        <form asp-action="MakeReservation" asp-controller="Posetilac" method="post" class="d-flex">
+                                            <input name="id" type="hidden" value="@let.Id" />
+                                            <input name="uid" type="hidden" value="@userId" />
+
+                                            <div class="me-2" style="width: 100px;">
+                                                <input name="numOfSeats" id="numOfSeats" class="form-control" value="1" type="number" min="1" max="@let.AvailableSeats" placeholder="1" required>
+                                            </div>
+
+                                            <button type="submit" class="btn btn-dark ms-auto" style="background-color: rgba(26, 75, 148,0.9);">Rezerviši</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="MakeReservation" asp-controller="Posetilac" method="post" class="d-flex">
+                                            <input name="id" type="hidden" value="@let.Id" />
+                                            <input name="uid" type="hidden" value="@userId" />
+
+                                            <div class="me-2" style="width: 250px;">
+                                                <span class="badge badge-pill bg-danger p-2" style="font-size: 1rem;">Manje od 3 dana do leta</span>
+                                            </div>
+
+                                            <button type="submit" class="btn btn-dark ms-auto" style="background-color: rgba(26, 75, 148,0.6);"  disabled>Rezerviši</button>
+                                        </form>
+                                    }
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>Ne postoje letovi sa zadatim parametrima!</p>
+        }
+    </div>
+</body>
+

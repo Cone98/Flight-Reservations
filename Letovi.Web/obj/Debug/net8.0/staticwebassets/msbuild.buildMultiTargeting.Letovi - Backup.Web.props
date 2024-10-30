@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\Letovi - Backup.Web.props" />
+</Project>

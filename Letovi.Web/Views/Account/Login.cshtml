@@ -1,0 +1,86 @@
+﻿@model Letovi.Web.Models.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+
+@if (ViewData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @ViewData["ErrorMessage"]
+    </div>
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Avio Kompanija</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-image: url('@Url.Content("~/images/Avion1.jpg")');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            margin-top: 100px;
+        }
+
+        .form-control {
+            border-radius: 0;
+        }
+
+        .btn-dark {
+            background-color: #343a40;
+            border-color: #343a40;
+            border-radius: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h1 class="mt-3 mb-3 h3 text-center">
+                            Login
+                        </h1>
+
+                        <form method="post">
+                            <div class="mb-3">
+                                <label class="form-label">Username</label>
+                                <input type="text" id="username" class="form-control" asp-for="Username" required />
+                                <span class="text-danger" asp-validation-for="Username"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" id="password" class="form-control" asp-for="Password" required minlength="6" />
+                                <span class="text-danger" asp-validation-for="Password"></span>
+                            </div>
+
+                            <div class="mb-3 text-center">
+                                <button type="submit" class="btn btn-dark btn-block">Login</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

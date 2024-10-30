@@ -1,0 +1,169 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> signInManager
+@model List<Letovi.Web.Models.ViewModels.ReservationViewModel>
+
+<body style="background-image: url('@Url.Content("~/images/clouds.jpg")'); background-size: cover; background-repeat: no-repeat; background-attachment: fixed;">
+    <div class="container py-4">
+        <div class="bg-secondary bg-opacity-10 py-2 mb-4">
+            <h1 class="text-center">Prikaz Rezervacija</h1>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-12">
+                @if (Model != null && Model.Any())
+                {
+                    <table class="table table-striped" id="reservation-table">
+                        <thead>
+                            <tr>
+                                <th>Mesto Polaska</th>
+                                <th>Mesto Dolaska</th>
+                                <th>Broj presedanja</th>
+                                <th>Datum polaska</th>
+                                <th>Broj zahtevanih mesta</th>
+                                <th>Status</th>
+                                <th>Odobri</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var reservacija in Model)
+                            {
+                                <tr data-id="@reservacija.Id">
+                                    <td>@reservacija.Flight.DepartureCity</td>
+                                    <td>@reservacija.Flight.ArrivalCity</td>
+                                    <td>@reservacija.Flight.NumberOfStops</td>
+                                    <td>@reservacija.Flight.FlightDate.ToShortDateString()</td>
+                                    <td>@reservacija.NumberOfSeats</td>
+                                    <td class="status" style="color: @(reservacija.isApproverd ? "green" : "red")">
+                                        @(reservacija.isApproverd ? "Odobrena" : "Nije odobrena")
+                                    </td>
+                                    @if (!reservacija.isApproverd)
+                                    {
+                                        <td class="approvement">
+                                            <form id="form-@reservacija.Id" onsubmit="submitForm(event, '@reservacija.Id')">
+                                                <input type="hidden" name="id" value="@reservacija.Id" />
+                                                <input type="hidden" name="fid" value="@reservacija.Flight.Id" />
+                                                <button type="submit" class="btn btn-success">Odobri</button>
+                                            </form>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {<table class="table table-striped" id="reservation-table">
+                        <thead>
+                            <tr>
+                                <th>Mesto Polaska</th>
+                                <th>Mesto Dolaska</th>
+                                <th>Broj presedanja</th>
+                                <th>Datum polaska</th>
+                                <th>Broj zahtevanih mesta</th>
+                                <th>Status</th>
+                                <th>Odobri</th>
+                            </tr>
+                        </thead>
+                    <tbody></tbody>
+                </table>
+                    
+                }
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Kreiranje konekciju sa hub-om
+                const connection = new signalR.HubConnectionBuilder()
+                    .withUrl("/reservationHub")
+                    .configureLogging(signalR.LogLevel.Information)
+                    .build();
+
+                //funkcija koja će se izvršiti kada se primi obaveštenje o promeni rezervacija
+                connection.on("ReceiveReservationUpdate", function (json) {
+                    var reservation = JSON.parse(json);
+                    var reservationRow = document.querySelector(`tr[data-id="${reservation.Id}"]`);
+                    //ako treba da se promeni status
+                    if (reservationRow) {
+                        var statusCell = reservationRow.querySelector('.status');
+                        if (statusCell) {
+                            statusCell.innerText = reservation.isApproverd ? 'Odobrena' : 'Nije odobrena';
+                            statusCell.style.color = reservation.isApproverd ? 'green' : 'red';
+                        }
+                        var approvementCell = reservationRow.querySelector('.approvement');
+                        if (reservation.isApproverd) {
+                            approvementCell.innerHTML = '';
+                        } else {
+                            approvementCell.innerHTML = `
+                                                        <form id="form-${reservation.Id}" onsubmit="submitForm(event, '${reservation.Id}')">
+                                                            <input type="hidden" name="id" value="${reservation.Id}" />
+                                                            <input type="hidden" name="fid" value="${reservation.Flight.Id}" />
+                                                            <button type="submit" class="btn btn-success">Odobri</button>
+                                                        </form>`;
+                        }//ako treba da se doda novi red
+                    } else {
+                        var tableBody = document.querySelector("#reservation-table tbody");
+                        var newRow = document.createElement("tr");
+                        newRow.dataset.id = reservation.Id;
+                        newRow.innerHTML = `
+                                                    <td>${reservation.Flight.DepartureCity}</td>
+                                                    <td>${reservation.Flight.ArrivalCity}</td>
+                                                    <td>${reservation.Flight.NumberOfStops}</td>
+                                                    <td>${new Date(reservation.Flight.FlightDate).toLocaleDateString()}</td>
+                                                    <td>${reservation.NumberOfSeats}</td>
+                                                    <td class="status" style="color: ${reservation.isApproverd ? 'green' : 'red'}">
+                                                        ${reservation.isApproverd ? 'Odobrena' : 'Nije odobrena'}
+                                                    </td>
+                                                    <td class="approvement">
+                                                        <form id="form-${reservation.Id}" onsubmit="submitForm(event, '${reservation.Id}')">
+                                                            <input type="hidden" name="id" value="${reservation.Id}" />
+                                                            <input type="hidden" name="fid" value="${reservation.Flight.Id}" />
+                                                            <button type="submit" class="btn btn-success">Odobri</button>
+                                                        </form>
+                                                    </td>`;
+                        tableBody.appendChild(newRow);
+                    }
+                });
+
+                connection.onclose(function (error) {
+                    console.error("Connection closed with error: ", error);
+                    setTimeout(function () {
+                        connection.start().catch(err => console.error(err.toString()));
+                    }, 5000);
+                });
+
+                connection.start().catch(function (err) {
+                    console.error(err.toString());
+                });
+            });
+            //funkcija koja se poziva samo kada je dodat novi red i na njemu se klikne odobri
+            function submitForm(event, reservationId) {
+                event.preventDefault(); // sprecavanje default form submision
+
+                var form = document.getElementById(`form-${reservationId}`);
+                var formData = new FormData(form);
+
+                fetch('/Agent/Odobri', { //fetch api, da ne bi reloadovalo stranicu
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if (response.ok) {
+                        return response.text(); // debugging poruke
+                    } else {
+                        throw new Error('Network response was not ok.');
+                    }
+               
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        </script>
+    }
+</body>

@@ -1,0 +1,118 @@
+﻿@{
+    ViewData["Title"] = "Rezervacija Karata";
+}
+
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('@Url.Content("~/images/Avion4.jpg")');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            color: white; 
+        }
+
+        .city-windows {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .city-window {
+            background-color: rgba(0, 0, 0, 0.3); 
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem;
+            width: 280px;
+            text-align: center;
+        }
+
+            .city-window img {
+                width: 100%;
+                border-radius: 8px;
+            }
+
+        h1 {
+            margin-top: 2rem;
+            text-align: center;
+            color: darkblue; 
+        }
+
+        p {
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    <header style="text-align: center; margin: 2rem 0;">
+        <h1 style="color: darkblue;">Dobrodošli</h1>
+        <p style="font-size: 1.2rem;">Rezervišite let već sada za posetu nekih od najlepših srpskih gradova!</p>
+    </header>
+
+
+
+    <div class="city-windows">
+        
+        <div class="city-window">
+            <h3>Beograd</h3>
+            <img src="@Url.Content("~/images/beograd.jpg")" alt="Beograd">
+            <p>
+                Beograd, glavni i najveći grad Srbije.
+                Prva naselja na široj teritoriji Beograda datiraju iz praistorijske Vinče, 4.800 godina pre nove ere.
+                Sam Beograd su osnovali Kelti u 3. veku pre n. e, pre nego što je postao rimsko naselje Singidunum.
+                Grad leži na ušću Save u Dunav u centralnom delu Srbije, gde se Panonska nizija spaja sa Balkanskim poluostrvom.
+            </p>
+        </div>
+
+       
+        <div class="city-window">
+            <h3>Niš</h3>
+            <img src="@Url.Content("~/images/nis.jpg")" alt="Niš">
+            <p>
+                Niš je bio administrativni, vojni i trgovinski centar različitih država i carstava kojima je, tokom svoje duge istorije, pripadao.
+                Na prostoru današnjeg Niša, u antičkom gradu Naisu rođeni su rimski carevi Konstantin Veliki i Konstancije III.
+                Geografski položaj Niša učinio ga je strateški važnim i time primamljivim gradom za mnoge osvajače.
+            </p>
+        </div>
+
+       
+        <div class="city-window">
+            <h3>Kraljevo</h3>
+            <img src="@Url.Content("~/images/kraljevo.jpg")" alt="Kraljevo">
+            <p>
+                Gradski grb se sastoji od sedam kruna, što simbolizuje krunisanje sedam kraljeva u Manastiru Žiča, koji se nalazi na 5 km od centra grada.
+                Kraljevo je administrativni, privredni, sportski i kulturni centar uže Srbije. Takođe i raskrsnica važnih magistralnih pravaca.
+            </p>
+        </div>
+
+       
+        <div class="city-window">
+            <h3>Priština</h3>
+            <img src="@Url.Content("~/images/pristina.jpg")" alt="Pristina">
+            <p>
+                Naseljeno ljudima od praistorije, područje Prištine je bilo dom nekoliko ilirskih naroda.
+                Dardanski kralj Bardil okupio je razna plemena u 4. veku p. n. e. i uspostavio Kraljevinu Dardaniju.
+                Nasleđe klasičnog doba predstavlja naselje Ulpijana, koje se smatralo jednim od najuticajnijih rimskih gradova na Balkanskom poluostrvu.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

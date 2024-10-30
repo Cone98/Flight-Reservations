@@ -1,0 +1,77 @@
+﻿@{
+    ViewData["Title"] = "Pristup Odbijen";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pristup Odbijen - Avio Kompanija</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('@Url.Content("~/images/plane2.jpg")');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+            color: #fff;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid #dc3545;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #dc3545;
+            color: white;
+            border-bottom: 1px solid #dc3545;
+        }
+
+        .btn-outline-secondary {
+            color: black;
+            border-color: #6c757d;
+        }
+
+            .btn-outline-secondary:hover {
+                color: #fff;
+                background-color: #6c757d;
+                border-color: #6c757d;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h2 class="mb-0">Pristup Odbijen</h2>
+                    </div>
+                    <div class="card-body text-center">
+                        <p class="lead" style="color:black">Nije vam dozvoljeno da pristupite ovoj stranici!</p>
+                        <p class="mb-4" style="color:black">Izgleda da nemate potrebne dozvole za pregled ove stranice. Ako verujete da je ovo greška, molimo vas da kontaktirate sistemskog administratora.</p>
+                        <a href="javascript:history.back()" class="btn btn-outline-secondary mr-2">Vrati se nazad</a>
+                        <a asp-area="" asp-controller="Home" asp-action="Index" class="btn btn-primary">Povratak na Početnu Stranicu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

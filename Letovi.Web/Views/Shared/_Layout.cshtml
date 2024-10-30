@@ -1,0 +1,116 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> signInManager
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Letovi.Web</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Letovi.Web.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <style>
+      .header{
+            background-color:rgba(26, 75, 148,0)
+
+      }
+
+        .dropdown-menu .dropdown-item {
+            color: white;
+            background-color: rgba(26, 75, 148, 0);
+        }
+
+            .dropdown-menu .dropdown-item:hover {
+                background-color: rgba(26, 75, 148, 0.7);
+            }
+
+        .footer {
+            border-top: 1px solid #ccc;
+            text-align: center;
+            padding: 1rem 0;
+            color: #666;
+        }
+    </style>
+    <header style="background-color:rgba(26, 75, 148,0.3)">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-darkblue ">
+            <div class="container" >
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index" >Početna stranica </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav" >
+                    <ul class="navbar-nav me-auto">
+                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Agent"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="agentMenuDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color:white">
+                                    Meni za osoblje
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="agentMenuDropdown" style=" background-color: rgba(26, 75, 148,0.5);">
+                                    @if (signInManager.IsSignedIn(User) && User.IsInRole("Agent") && !User.IsInRole("Admin"))
+                                    {
+                                        <li><a class="dropdown-item"  asp-area="" asp-controller="Agent" asp-action="Add">Unesi Let</a></li>
+                                        <li><a class="dropdown-item"  asp-area="" asp-controller="Agent" asp-action="ManageReservations">Upravljaj Rezervacijama</a></li>
+                                        <li><a class="dropdown-item"  asp-area="" asp-controller="Agent" asp-action="List">Pregledaj letove</a></li>
+                                    }
+
+                                    @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                                    {
+                                        <li><a class="dropdown-item"  asp-area="" asp-controller="Admin" asp-action="ManageFlights">Azuriraj letove</a></li>
+                                        <li><a class="dropdown-item"  asp-area="" asp-controller="Admin" asp-action="NewUser">Novi korisnik</a></li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Posetilac") && !User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item dropdown"  >
+                                <a class="nav-link dropdown-toggle" href="#" id="userMenuDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color:white">
+                                    Korisnički Meni
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="userMenuDropdown" style="background-color: rgba(26, 75, 148,0.5);">
+                                    <li><a class="dropdown-item"  asp-area="" asp-controller="Posetilac" asp-action="SearchFlights">Pregled letova</a></li>
+                                    <li><a class="dropdown-item"  asp-area="" asp-controller="Posetilac" asp-action="ListReservations">Pregled rezervacija</a></li>
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+
+                    @if (signInManager.IsSignedIn(User))
+                    {
+                        <div class="d-flex align-items-center">
+                            <div style="color:purple; margin-right:10px">
+                                @User?.Identity?.Name
+                            </div>
+                            <a class="btn btn-light me-3" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <a class="btn btn-light me-3" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+                    }
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main">
+        <div class="container py-4">
+            @RenderBody()
+        </div>
+    </main>
+
+    <footer class="border-top footer text-muted">
+        <div class="container" style="color:red">
+            <p>&copy; 2024 - Letovi.Web -</p>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
